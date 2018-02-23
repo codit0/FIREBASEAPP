@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas</title>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCkehth84qkiGbVJZ9pjJEd37GPfQ3PJvQ",
+		authDomain: "prodservti.firebaseapp.com",
+		databaseURL: "https://prodservti.firebaseio.com",
+		projectId: "prodservti",
+		storageBucket: "prodservti.appspot.com",
+		messagingSenderId: "767539168032"
+	};
+  firebase.initializeApp(config);
+</script>
+  </head>
+  <body>
+   <table>
+   <tr>
+		<td>ID: </td>
+		<td><input type="text" name="id" id="app_id" /></td>	
+   </tr>
+   <tr>
+		<td>APPLICATION NAME: </td>
+		<td><input type="text" name="app_name" id="app_name" /></td>	
+   </tr>
+   <tr>
+		<td><input type="button" value="SAVE" onclick="save_app();" /></td>
+		<td><input type="button" value="UPDATE" onclick="update_app();" /></td>
+		<td><input type="button" value="DELETE" onclick="delete_app();" /></td>
+   </tr>
+   </table>
+   <h3>Applications Links</h3>
+   <table ID="tbl_app_list" border="1">
+		<tr>
+			<td>ID</td>
+			<td>APPLICATION</td>
+		</tr>
+   </table>
+   <script>
+	var tblApps = document.getElementById('tbl_app_list');
+	var databaseRef = firebase.database().ref('apps/');
+	var rowIndex =1;
+	
+	databaseRef.once('value',function(snapshot){
+		snapshot.forEach(function(childSnapshot){
+		var childKey = childSnapshot.key;
+		var childData =childSnapshot.val();
+		
+		var row =tblApps.insertRow(rowIndex);
+		var cellId = row.insertCell(0);
+		var cellName = row.insertCell(1);
+		cellId.appendChild(document.createTextNode(childKey));
+		cellName.appendChild(document.createTextNode(childData.app_name));
+		rowIndex=rowIndex +1;
+		
+		
+	});
+	});
+	
+	function save_app(){
+	var app_name =document.getElementById('app_name').value;
+	
+	var aid =document.getElementById('app_id').value;
+	
+	var data = {
+	app_id: aid,
+	app_name: app_name
+	}
+	 var updates={};
+	 updates['/apps/' + aid] = data;
+	 firebase.database().ref().update(updates);
+	 reload_page();
+	}
+	function reload_page(){
+	window.location.reload();
+	}
+   
+   </script>
+   
+  </body>
+</html>
